@@ -1,4 +1,5 @@
 """A simple MLP to solve XOR."""
+import matplotlib.pyplot as plt
 import numpy as np
 import math
 import sys
@@ -41,6 +42,7 @@ def derivative_sigmoid(x):
 def forward_pass(W_1, W_2):
     """Forward propagation through the network."""
     this.a_1 = this.X
+
     this.z_2 = np.dot(this.a_1, W_1)
     this.a_2 = sigmoid(this.z_2)
 
@@ -52,7 +54,7 @@ def forward_pass(W_1, W_2):
 
 def backprop(y_hat, W_1, W_2):
     """Backpropagation algorithm."""
-    error_3 = np.subtract(this.y, y_hat)
+    error_3 = np.subtract(y_hat, this.y)
     delta_3 = np.multiply(error_3, derivative_sigmoid(this.z_3))
     # delta_3 = np.multiply(error_3, derivative_sigmoid(this.a_3))
 
@@ -74,24 +76,57 @@ def derivative_relu(x):
     return 1. * (x > 0)
 
 
-def gd():
-    this.w_1 = np.random.uniform(0, 1, (3, 4))
-    this.w_2 = np.random.uniform(0, 1, (4, 1))
+def gd(learning_rates, epchos):
+    loss_map = {}
+    for rate in learning_rates:
+        loss_map[rate] = []
+        print('training with rate: ', rate)
 
-    i = 0
+        this.w_1 = np.random.uniform(0, 1, (3, 4))
+        this.w_2 = np.random.uniform(0, 1, (4, 1))
 
-    while i < 60000:
-        this.fp = forward_pass(this.w_1, this.w_2)
+        this.delta_w_1 = np.zeros((3, 4))
+        this.delta_w_2 = np.zeros((4, 1))
 
-        if i % 10000 == 0:
-            print(loss(this.fp, this.y))
+        i = 0
 
-        [dw_1, dw_2] = backprop(this.fp, this.w_1, this.w_2)
+        while i < epchos:
+            this.fp = forward_pass(this.w_1, this.w_2)
+            [dw_1, dw_2] = backprop(this.fp, this.w_1, this.w_2)
 
-        this.w_1 += dw_1
-        this.w_2 += dw_2
+            this.w_1 -= rate * dw_1
+            this.w_2 -= rate * dw_2
 
-        i += 1
+            loss_value = loss(this.fp, this.y)
+            loss_map[rate].append(loss_value)
+
+            i += 1
+
+            if i % 10000 == 0:
+                print(loss_value)
+    return loss_map
 
 
-gd()
+epochs = 70000
+learning_rates = [0.1, 0.01, 0.001, 0.0001, 10, 100]
+training_points = gd(learning_rates, epochs)
+
+training_epochs = np.arange(0, epochs)
+
+plt.plot(training_epochs, training_points[0.1])
+plt.plot(training_epochs, training_points[0.01])
+plt.plot(training_epochs, training_points[0.001])
+plt.plot(training_epochs, training_points[0.0001])
+plt.plot(training_epochs, training_points[10])
+plt.plot(training_epochs, training_points[100])
+
+plt.legend(['Learning rate = 0.1', 'Learning rate = 0.01',
+            'Learning rate = 0.001',
+            'Learning rate = 0.0001', 'Learning rate = 10',
+            'Learning rate = 100'], loc='upper left')
+
+plt.xlabel('Epochs')
+plt.ylabel('Mean Absolute Error')
+plt.axis([1, epochs, 0, 1])
+
+plt.show()
