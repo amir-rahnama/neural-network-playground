@@ -76,10 +76,13 @@ def derivative_relu(x):
     return 1. * (x > 0)
 
 
-def gd(learning_rates, epchos):
+def gd(learn_rates, epchos):
     loss_map = {}
-    for rate in learning_rates:
+    weight_map = {}
+
+    for rate in learn_rates:
         loss_map[rate] = []
+        weight_map[rate] = []
         print('training with rate: ', rate)
 
         this.w_1 = np.random.uniform(0, 1, (3, 4))
@@ -97,6 +100,8 @@ def gd(learning_rates, epchos):
             this.w_1 -= rate * dw_1
             this.w_2 -= rate * dw_2
 
+            weight_map[rate] = [this.w_1, this.w_2]
+
             loss_value = loss(this.fp, this.y)
             loss_map[rate].append(loss_value)
 
@@ -104,29 +109,38 @@ def gd(learning_rates, epchos):
 
             if i % 10000 == 0:
                 print(loss_value)
-    return loss_map
+    return [loss_map, weight_map]
 
 
-epochs = 70000
-learning_rates = [0.1, 0.01, 0.001, 0.0001, 10, 100]
-training_points = gd(learning_rates, epochs)
+def get_weights():
+    return this.weight_map
 
-training_epochs = np.arange(0, epochs)
 
-plt.plot(training_epochs, training_points[0.1])
-plt.plot(training_epochs, training_points[0.01])
-plt.plot(training_epochs, training_points[0.001])
-plt.plot(training_epochs, training_points[0.0001])
-plt.plot(training_epochs, training_points[10])
-plt.plot(training_epochs, training_points[100])
+def plot():
+    this.epochs = 70000
+    this.learning_rates = [0.1, 0.01, 0.001, 0.0001, 10, 100]
+    this.loss, this.weight = gd(this.learning_rates, this.epochs)
 
-plt.legend(['Learning rate = 0.1', 'Learning rate = 0.01',
-            'Learning rate = 0.001',
-            'Learning rate = 0.0001', 'Learning rate = 10',
-            'Learning rate = 100'], loc='upper left')
+    training_epochs = np.arange(0, this.epochs)
 
-plt.xlabel('Epochs')
-plt.ylabel('Mean Absolute Error')
-plt.axis([1, epochs, 0, 1])
+    plt.plot(training_epochs, this.loss[0.1])
+    plt.plot(training_epochs, this.loss[0.01])
+    plt.plot(training_epochs, this.loss[0.001])
+    plt.plot(training_epochs, this.loss[0.0001])
+    plt.plot(training_epochs, this.loss[10])
+    plt.plot(training_epochs, this.loss[100])
 
-plt.show()
+    plt.legend(['Learning rate = 0.1', 'Learning rate = 0.01',
+                'Learning rate = 0.001',
+                'Learning rate = 0.0001', 'Learning rate = 10',
+                'Learning rate = 100'], loc='upper left')
+
+    plt.xlabel('Epochs')
+    plt.ylabel('Mean Absolute Error')
+    plt.axis([1, this.epochs, 0, 1])
+
+    plt.show()
+
+
+if __name__ == '__main__':
+    plot()
