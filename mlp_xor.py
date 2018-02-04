@@ -52,6 +52,19 @@ def forward_pass(W_1, W_2):
     return this.a_3
 
 
+def predict(X, W_1, W_2):
+    """Forward propagation through the network."""
+    this.a_1 = X
+
+    this.z_2 = np.dot(this.a_1, W_1)
+    this.a_2 = sigmoid(this.z_2)
+
+    this.z_3 = np.dot(this.a_2, W_2)
+    this.a_3 = sigmoid(this.z_3)
+
+    return this.a_3
+
+
 def backprop(y_hat, W_1, W_2):
     """Backpropagation algorithm."""
     error_3 = np.subtract(y_hat, this.y)
@@ -77,12 +90,12 @@ def derivative_relu(x):
 
 
 def gd(learn_rates, epchos):
-    loss_map = {}
-    weight_map = {}
+    this.loss_map = {}
+    this.weight_map = {}
 
     for rate in learn_rates:
-        loss_map[rate] = []
-        weight_map[rate] = []
+        this.loss_map[rate] = []
+        this.weight_map[rate] = []
         print('training with rate: ', rate)
 
         this.w_1 = np.random.uniform(0, 1, (3, 4))
@@ -100,16 +113,16 @@ def gd(learn_rates, epchos):
             this.w_1 -= rate * dw_1
             this.w_2 -= rate * dw_2
 
-            weight_map[rate] = [this.w_1, this.w_2]
+            this.weight_map[rate] = [this.w_1, this.w_2]
 
             loss_value = loss(this.fp, this.y)
-            loss_map[rate].append(loss_value)
+            this.loss_map[rate].append(loss_value)
 
             i += 1
 
             if i % 10000 == 0:
                 print(loss_value)
-    return [loss_map, weight_map]
+    return [this.loss_map, this.weight_map]
 
 
 def get_weights():
