@@ -20,7 +20,7 @@ scores = mlp_xor.gd([0.1], 70000)
 alphas = []
 scores = []
 
-for alpha in np.linspace(-2, 2, num=200):
+for alpha in np.linspace(0, 2, num=200):
     alphas.append(alpha)
 
     new_w_1 = (1 - alpha) * this.initial_w1 + alpha * this.optimal_w_1
