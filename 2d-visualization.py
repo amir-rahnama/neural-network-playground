@@ -100,59 +100,79 @@ def derivative_relu(x):
 
 
 def gd(learn_rates, epochs):
-    this.w_1_rate_0_init = np.random.uniform(0, 1, (3, 4))
-    this.w_2_rate_0_init = np.random.uniform(0, 1, (4, 1))
+    this.w_1_rate_0 = np.random.uniform(0, 1, (3, 4))
+    this.w_2_rate_0 = np.random.uniform(0, 1, (4, 1))
 
-    this.w_1_rate_0 = this.w_1_rate_0_init
-    this.w_2_rate_0 = this.w_2_rate_0_init
+    this.alpha = []
+    this.beta = []
 
-    alpha = []
-    beta = []
+    this.w_1_t = []
+    this.w_1_t.append(this.w_1_rate_0)
+
+    this.w_2_t = []
+    this.w_2_t.append(this.w_2_rate_0)
 
     i = 0
 
     while i < epochs:
         this.fp_rate_0 = forward_pass(this.w_1_rate_0, this.w_2_rate_0)
-        [dw_1_rate_0, dw_2_rate_0] = backprop(this.fp_rate_0, this.w_1_rate_0, this.w_2_rate_0)
+        [dw_1_rate_0, dw_2_rate_0] = backprop(this.fp_rate_0, this.w_1_rate_0,
+                                              this.w_2_rate_0)
 
         this.w_1_rate_0_new = learn_rates[0] * dw_1_rate_0
+        this.w_1_t.append(this.w_1_rate_0_new)
         this.w_1_rate_0 -= this.w_1_rate_0_new
 
         this.w_2_rate_0_new = learn_rates[0] * dw_2_rate_0
+        this.w_2_t.append(this.w_2_rate_0_new)
         this.w_2_rate_0 -= this.w_2_rate_0_new
 
+        new_fp = forward_pass(this.w_1_rate_0, this.w_2_rate_0)
+        loss_val = loss(new_fp, this.y)
 
-        if i % 100 == 0:
-            diff_u_w_1 = np.subtract(this.w_1_rate_0_new, this.w_1_rate_0_init)
-            diff_u_w_2 = np.subtract(this.w_2_rate_0_new, this.w_2_rate_0_init)
-
-            u_w_1 = diff_u_w_1 / LA.norm(diff_u_w_1)
-            u_w_2 = diff_u_w_2 / LA.norm(diff_u_w_2)
-
-            alpha_w_1 = np.dot(diff_u_w_1.T, u_w_1)
-            alpha_w_2 = np.dot(diff_u_w_2.T, u_w_2)
-
-            alpha.append(LA.norm(alpha_w_1)+ LA.norm(alpha_w_2))
-
-            diff_v_w_1 = this.w_1_rate_0_new - this.w_1_rate_0_init - np.dot(u_w_1, alpha_w_1)
-            diff_v_w_2 = this.w_2_rate_0_new - this.w_2_rate_0_init - np.dot(u_w_2, alpha_w_2)
-
-            v_w_1 = diff_v_w_1 / LA.norm(diff_v_w_1)
-            v_w_2 = diff_v_w_2 / LA.norm(diff_v_w_2)
-
-
-            beta_w_1 = np.dot(diff_v_w_1.T, v_w_1)
-            beta_w_2 = np.dot(diff_v_w_2.T, v_w_2)
-
-            beta.append(LA.norm(beta_w_1) + LA.norm(beta_w_2))
+        if i % 1000:
+            print(loss_val)
 
         i += 1
 
+    return [this.w_1_rate_0, this.w_2_rate_0]
 
-    print(beta)
-    #plt.scatter(alpha, beta)
-    #plt.show()
+
+def plot(w_1, w_2):
+    alpha = []
+    beta = []
+
+    w_1_init = this.w_1_t[0]
+    w_2_init = this.w_2_t[0]
+
+    diff_u_w_1 = np.subtract(this.w_1_t, w_1_init)
+    diff_u_w_2 = np.subtract(this.w_2_t, w_2_init)
+
+    u_w_1_direction = np.subtract(this.w_1, w_1_init)
+    u_w_2_direction = np.subtract(this.w_2, w_2_init)
+
+    u_w_1 = u_w_1_direction / LA.norm(u_w_1_direction)
+    u_w_2 = u_w_2_direction / LA.norm(u_w_2_direction)
+
+    alpha_w_1 = np.dot(diff_u_w_1.T, u_w_1)
+    alpha_w_2 = np.dot(diff_u_w_2.T, u_w_2)
+
+    alpha.append(LA.norm(alpha_w_1) + LA.norm(alpha_w_2))
+
+    diff_v_w_1 = this.w_1_rate_0_new - this.w_1_rate_0_init - np.dot(u_w_1, alpha_w_1)
+    diff_v_w_2 = this.w_2_rate_0_new - this.w_2_rate_0_init - np.dot(u_w_2, alpha_w_2)
+
+    v_w_1 = diff_v_w_1 / LA.norm(diff_v_w_1)
+    v_w_2 = diff_v_w_2 / LA.norm(diff_v_w_2)
+
+    beta_w_1 = np.dot(diff_v_w_1.T, v_w_1)
+    beta_w_2 = np.dot(diff_v_w_2.T, v_w_2)
+
+    beta.append(LA.norm(beta_w_1) + LA.norm(beta_w_2))
+
+    plt.scatter(alpha, beta)
 
 
 if __name__ == '__main__':
-    gd(this.learning_rates, epochs=1000)
+    [w_1, w_2] = gd([10], epochs=10)
+    plot(w_1, w_2)
