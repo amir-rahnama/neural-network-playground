@@ -10,7 +10,7 @@ Markdown==2.6.11
 matplotlib==2.1.2
 numpy==1.14.0
 olefile==0.44
-Pillow==4.2.1
+Pillow==8.2.0
 protobuf==3.5.1
 pycparser==2.18
 pyparsing==2.2.0
